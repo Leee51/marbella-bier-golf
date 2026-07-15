@@ -429,6 +429,25 @@ const state = {
   delay: [0,0,0],
 };
 
+const STORAGE_KEY = 'pubgolf-marbella-state';
+
+function saveState(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+}
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return;
+    const saved = JSON.parse(raw);
+    if(saved.teams) state.teams = saved.teams;
+    if(saved.scores) Object.assign(state.scores, saved.scores);
+    if(saved.kuverts) Object.assign(state.kuverts, saved.kuverts);
+    if(saved.delay) state.delay = saved.delay;
+  }catch(e){}
+}
+loadState();
+
 const teamInputs = document.getElementById('teamInputs');
 state.teams.forEach((t,i)=>{
   const inp = document.createElement('input');
@@ -544,6 +563,7 @@ function totals(){
 function escapeHTML(s){ return s.replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 function render(){
+  saveState();
   const heads = document.getElementById('colHeads').children;
   for(let i=0;i<3;i++) heads[i].textContent = state.teams[i];
 
